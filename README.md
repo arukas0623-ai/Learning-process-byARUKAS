@@ -1,88 +1,266 @@
 # AgentLearn
 
-AgentLearn 是一个可迁移的 Personal Learning Intelligence Framework（个人学习智能框架）。
+AgentLearn 是一个可迁移的个人学习智能框架。
 
-它给 Agent 提供一套稳定的认知接口，使不同 Agent 能够用较少上下文恢复学习工作：读取当前状态，区分事实与推测，根据证据决定下一步，并把重要结果写回长期状态。
+它解决两件事：
 
-AgentLearn 不是聊天记录归档器、固定课程表、题库、数据库或 UI 应用。
+1. 让用户可以用简单的话告诉 Agent“我想学什么”，或上传自己的学习材料。
+2. 让不同 Agent 能快速恢复学习状态，并根据真实证据决定下一步。
 
-## 解决的问题
+AgentLearn 不是课程平台、题库、聊天记录仓库、数据库或 UI 应用。它是一套由 Skill、协议、状态文件和可替换适配器组成的学习接口。
 
-普通的学习对话容易出现几个问题：
+## 先看这里
 
-- 新 Agent 不知道用户目前学到哪里。
-- Agent 把“听过”“能解释”“能独立完成”混为一谈。
-- 一次答对或答错被误判为长期能力。
-- 计划脱离真实证据，变成固定课程表。
-- 用户的学习历史和个人目标被误提交到公开仓库。
+### 如果你只是想开始学习
 
-AgentLearn 用以下边界解决这些问题：
+你不需要先理解目录、JSON 或 Git。直接把下面这段话复制给支持 AgentLearn 的 Agent，再把方括号内容改成自己的信息：
 
-1. 能力判断必须有证据。
-2. 证据不足时保留 \`UNKNOWN\`。
-3. “知道、能解释、能应用、能迁移”分别判断。
-4. 学习路线根据状态动态生成，不预设固定课表。
-5. 公共协议与个人状态严格分离。
-6. Agent 交接使用固定、可读取的结构。
+```text
+我想学习：［填写主题，例如 C 语言、英语、数学或软件工程］
+我的目标是：［填写目标，例如能独立写程序、通过考试或完成项目］
+我目前的基础是：［不知道也可以写“不确定”］
 
-## 核心概念
+请使用 AgentLearn。
+先读取当前学习状态；如果没有状态，就明确说明 UNKNOWN。
+不要直接给我长课程表。
+按照 Input → Recall → Learning Validation → Application 工作。
+每次只给我一个当前最合适的问题或任务。
+在我回答前，不要展示答案、完整解法或评分标准。
+学习结束后，只根据真实证据更新状态。
+```
 
-### AgentLearn Identity
+如果你还没有学习状态，Agent 应先做短诊断，而不是假设你已经掌握了某些知识。
 
-AgentLearn 的定位是：
+### 如果你有学习材料
 
-> 一个帮助 Agent 建模学习状态、验证能力、追踪成长并生成下一步行动的框架。
+你可以把 PDF、Markdown、TXT、代码、图片或课程笔记直接上传到 Agent 对话中，然后发送：
 
-它不替宿主 Agent 提供 system instruction，也不替换宿主已有的 skill、command 或 framework。AgentLearn 只提供自己的 namespace 能力和文件协议。
+```text
+请把我刚上传的材料作为本次学习的 Knowledge Source。
+先告诉我材料覆盖哪些主题，以及它们可能对应哪些能力。
+不要直接开始长篇讲解。
+先根据我的当前状态选择一个最小的 Input，并进入 Recall。
+不要在我回答前显示答案、完整解法或评分标准。
+```
 
-### Ability Map
+如果材料要长期放在本地，可以放在私有目录：
 
-Ability Map 描述“一个领域需要哪些能力”，例如编程基础、数据结构或算法思想。它是可替换的领域配置，不绑定教材、课程或某一种知识源。
+```text
+.agentlearn-private/sources/
+```
 
-### Learner State
+然后告诉 Agent：
 
-Learner State 描述“当前有哪些能力已经被证据支持”。它不保存未经验证的印象，也不把聊天原文直接当作能力结论。
+```text
+请读取 .agentlearn-private/sources/［文件名］，
+把它作为本次学习的 Knowledge Source。
+只读取完成当前任务所需的文件，不要递归读取全部历史。
+```
 
-推荐的能力状态包括：
+带有姓名、账号、学习记录、私人笔记或其他个人信息的材料，不要放进公开仓库，也不要提交到 GitHub。
 
-- \`UNKNOWN\`：没有足够证据。
-- \`HYPOTHESIS\`：有初步观察，但还没有完成验证。
-- \`VERIFIED\`：已有可复核证据，并通过验证。
-- \`NEEDS_PRACTICE\`：概念可能理解，但应用或迁移仍不稳定。
+## 用户操作指南
 
-具体状态枚举以项目中的 schema 和实例协议为准。
+### 第一步：安装或取得项目
 
-### Evidence Gate
+AgentLearn 没有单独的桌面安装程序。最简单的方式是下载仓库，或者使用 Git 克隆：
 
-长期状态只能沿着以下证据链更新：
+```bash
+git clone https://github.com/arukas0623-ai/Learning-process-byARUKAS.git
+cd Learning-process-byARUKAS
+```
 
-\`\`\`text
-Observation → Evidence → Hypothesis → Verification → Stable State
-\`\`\`
+Windows 用户也可以：
 
-含义如下：
+1. 打开仓库页面。
+2. 点击绿色的 `Code` 按钮。
+3. 选择 `Download ZIP`。
+4. 解压文件。
+5. 用支持 Skill 或项目文件读取的 Agent 打开解压后的项目目录。
 
-- \`Observation\`：记录实际观察到的行为，例如回答、代码、测试结果或 Debug 过程。
-- \`Evidence\`：保存可以复核的证据摘要和来源，不保存整段聊天原文。
-- \`Hypothesis\`：根据证据提出暂时判断。
-- \`Verification\`：通过新问题、独立实现、反例、测试或迁移任务验证判断。
-- \`Stable State\`：只有证据足够且验证通过，才允许形成稳定能力状态。
+如果你已经在 Codex 中打开了这个项目，不需要再次安装仓库；直接使用“告诉 Agent 学习什么”的方式即可。
 
-一次正确或错误回答通常只能产生观察，不能直接改变长期能力。
+### 第二步：初始化个人学习空间
 
-## 公共与私有数据边界
+个人状态必须放在私有目录，不放在公共框架目录。
 
-公共仓库只保存通用框架，不保存任何特定用户的状态。
+推荐目录：
 
-推荐目录结构：
+```text
+.agentlearn-private/
+├── identity.md
+├── learner_state.json
+├── active_goals.json
+├── knowledge_debt.json
+├── sources/
+├── evidence/
+├── decisions/
+└── history/
+```
 
-\`\`\`text
-.agentlearn/                         # 公共：协议、schema、模板
-├── skill.md
+最简单的方法是让 Agent 初始化：
+
+```text
+请在当前项目初始化 AgentLearn 私有学习空间：
+1. 读取公共 .agentlearn/ 协议和模板。
+2. 创建 .agentlearn-private/ 及必要的状态文件。
+3. 把私有目录加入或确认已加入 .gitignore。
+4. 不要读取、复制或提交不必要的个人信息。
+5. 初始化完成后只汇报文件是否可用，不要开始教学。
+```
+
+也可以手动复制模板：
+
+```powershell
+New-Item -ItemType Directory -Force .agentlearn-private | Out-Null
+New-Item -ItemType Directory -Force .agentlearn-private/sources | Out-Null
+New-Item -ItemType Directory -Force .agentlearn-private/evidence | Out-Null
+New-Item -ItemType Directory -Force .agentlearn-private/decisions | Out-Null
+New-Item -ItemType Directory -Force .agentlearn-private/history | Out-Null
+Copy-Item .agentlearn/templates/identity.template.md .agentlearn-private/identity.md
+Copy-Item .agentlearn/templates/learner-state.template.json .agentlearn-private/learner_state.json
+```
+
+如果 Agent 尚未创建 active_goals.json 或 knowledge_debt.json，让 Agent 根据公共协议创建最小有效文件；不要自行猜测文件内容。
+
+### 第三步：告诉 Agent 你想学什么
+
+最简单的说法就是：
+
+```text
+我想学习［主题］。
+目标是［目标］。
+请先读取 AgentLearn 状态，然后开始一次短诊断。
+```
+
+更完整的说法：
+
+```text
+我想学习［主题］，目标是［具体结果］。
+我每次大约有［时间］。
+我目前知道［已知内容；不知道就写不确定］。
+我希望你［例如：每次只问一个问题、用中文、少讲解、多让我练习］。
+
+请使用 AgentLearn 的 IRLA 流程。
+先做必要的 Input 和 Recall，不要直接生成固定课程表。
+```
+
+你不需要知道 Ability Map 的格式，也不需要手动填写能力评分。Agent 应从你的回答、代码、任务结果和测试中收集证据。
+
+### 第四步：开始一次学习活动
+
+一次学习活动通常这样进行：
+
+```text
+Input
+Agent 提供一个小概念、材料片段、问题或任务。
+
+Recall
+你闭卷回答、解释、追踪或写出思路。
+此阶段只看问题，不看答案。
+
+Learning Validation
+你回答后，Agent 检查概念、过程、边界和原因。
+
+Application
+你把知识用于代码、伪代码、练习、调试或真实任务。
+必要时再做 Transfer，检查陌生问题中的迁移能力。
+```
+
+你可以直接这样开始：
+
+```text
+开始今天的 AgentLearn 学习。
+先按低 Token 启动流程读取状态。
+不要展示状态文件内部细节。
+只给我第一个问题，不要给答案。
+```
+
+如果你暂时不想开始，只想查看状态：
+
+```text
+请执行 AgentLearn inspect_state。
+只汇报当前阶段、目标、知识债务、最近变化和不确定项。
+不要开始教学。
+```
+
+### 第五步：结束学习并保存结果
+
+学习结束时可以说：
+
+```text
+结束本次学习。
+请根据本次真实表现记录 Observation 和 Evidence，
+运行 state validator，必要时更新 Hypothesis 或 Stable State，
+执行 distill，并由 Scheduler 更新下一次复习时间。
+只输出简短摘要，不保存聊天全文。
+```
+
+一次答对或答错不应直接变成长期能力结论。没有足够证据时，状态必须保持 `UNKNOWN` 或 `HYPOTHESIS`。
+
+## 个人材料如何安全地上传
+
+有三种方式，按方便程度选择：
+
+### 方式 A：直接上传到 Agent 对话
+
+适合临时学习：
+
+1. 在 Agent 对话中上传文件。
+2. 说明“把这个文件作为本次 Knowledge Source”。
+3. 指定你想学习的章节、主题或问题。
+4. 要求 Agent 先提取范围，再开始 IRLA。
+
+示例：
+
+```text
+我上传了《［文件名］》。
+我想学习其中的［章节或主题］。
+请先提取本次需要的最小内容，再按 IRLA 提问。
+不要把文件全文复制进长期状态。
+```
+
+### 方式 B：放进本地私有 sources
+
+适合重复使用：
+
+```text
+.agentlearn-private/sources/
+```
+
+只在提示中指定需要的文件：
+
+```text
+使用 .agentlearn-private/sources/intro.md。
+只读取与“［主题］”有关的部分。
+把它作为 Knowledge Source，不要把原文写入 learner state。
+```
+
+### 方式 C：发布去标识化的公共材料
+
+只有在材料已经删除个人信息，并且你确实希望公开时，才放入公共 examples/ 或其他公开目录。
+
+公开前检查：
+
+```text
+删除姓名、账号、个人目标、个人学习历史、私人笔记和本地绝对路径。
+把材料改成通用示例。
+确认它不依赖任何私有状态。
+```
+
+公开的领域示例可以描述某个学科需要哪些能力，但不能包含某个真实学习者的能力判断或学习过程。
+
+## 公共目录与私有目录
+
+公共仓库保存“AgentLearn 怎么工作”；私有目录保存“某个学习者现在是什么状态”。
+
+```text
+.agentlearn/                         # 公共，可提交 GitHub
+├── skill.md                         # AgentLearn 身份与总规则
 ├── protocols/
-│   ├── boot.md
-│   ├── handoff.md
-│   └── capability-interface.md
+│   ├── boot.md                      # 低 Token 启动
+│   ├── handoff.md                   # Agent 交接格式
+│   └── capability-interface.md      # 能力接口
 ├── schemas/
 │   ├── learner-state.schema.json
 │   ├── evidence.schema.json
@@ -91,189 +269,107 @@ Observation → Evidence → Hypothesis → Verification → Stable State
     ├── learner-state.template.json
     └── identity.template.md
 
-.agentlearn-private/                  # 私有：本地使用，必须被 Git 忽略
+.agentlearn-private/                  # 私有，本地使用，不提交
 ├── identity.md
 ├── learner_state.json
 ├── active_goals.json
 ├── knowledge_debt.json
-├── evidence/
-├── decisions/
-└── history/
-\`\`\`
+├── sources/                          # 用户自己的学习材料
+├── evidence/                         # 证据摘要
+├── decisions/                        # 有效设计或学习决策
+└── history/                          # 历史摘要
+```
 
-\`.agentlearn-private/\` 可以换成其他明确被忽略的私有路径，但不能把真实个人数据放入公共 \`.agentlearn/\`、README、公开 example 或 Git history。
+必须遵守：
 
-私有目录可以保存：
+- 公共目录不保存真实用户状态。
+- 私有目录不应被 Git 跟踪。
+- 不把私有材料、答案、聊天全文或历史记录复制到 README。
+- 缺失的状态不能由 Agent 编造。
+- 公开 example 必须是通用或去标识化内容。
 
-- 学习者自定义偏好。
-- 当前能力状态和目标。
-- 知识债务。
-- 证据索引、验证结果和学习决策。
-- 历史摘要。
+## 给 Agent 的最小接管说明
 
-私有目录不需要保存完整聊天记录。应优先保存短摘要、事实、证据来源、置信度和时间。
+以下部分是给 Agent 读取的。新 Agent 不需要先阅读整个仓库；按下面顺序读取即可：
 
-## 低 Token 启动协议
+```text
+AgentLearn = Personal Learning Intelligence Framework。
 
-新 Agent 接管时，先读取最小必要上下文，顺序固定如下：
+启动顺序：
+1. 读取 .agentlearn/skill.md。
+2. 读取 .agentlearn/protocols/boot.md。
+3. 读取存在的 .agentlearn-private/identity.md。
+4. 读取 learner_state.json、active_goals.json、knowledge_debt.json。
+5. 只在当前任务需要时读取 evidence、decisions、history 或 Knowledge Source。
 
-\`\`\`text
-1. .agentlearn/skill.md
-2. .agentlearn/protocols/boot.md
-3. .agentlearn-private/identity.md       # 存在时读取
-4. .agentlearn-private/learner_state.json
-5. .agentlearn-private/active_goals.json
-6. .agentlearn-private/knowledge_debt.json
-\`\`\`
+规则：
+- 缺失文件报告 NOT_AVAILABLE；无法判断的能力保持 UNKNOWN。
+- 不递归读取全部历史、日志、代码或题库。
+- 不把一次行为升级为长期能力。
+- 区分知道、能解释、能应用和能迁移。
+- 学习使用 Input → Recall → Learning Validation → Application。
+- 状态使用 Observation → Evidence → Hypothesis → Verification → Stable State。
+- Recall 阶段只展示 Learner View；回答前不展示答案、解法或评分标准。
+- Scheduler 负责 FSRS、interval、lapse 和复习时间。
+- Agent 负责提问、解释、追问、验证、评分和证据记录。
+- 永远不读取、引用、提交或上传私有状态到公共仓库。
+```
 
-启动阶段不要默认读取：
+更完整的规则位于：
 
-- 全部历史。
-- 全部日志。
-- 全部 evidence 文件。
-- 全部 decisions 文件。
-- 完整题库、完整能力地图或全部代码。
+```text
+.agentlearn/skill.md
+.agentlearn/protocols/boot.md
+.agentlearn/protocols/handoff.md
+.agentlearn/protocols/capability-interface.md
+```
 
-只有当前任务需要时，才按索引读取 \`evidence/\`、\`decisions/\`、\`history/\` 或具体知识源。
+启动阶段只输出恢复上下文，不自动开始第一道题，除非用户明确要求开始学习。
 
-文件不存在时：
+## AgentLearn 能力接口
 
-- 不创建虚假状态。
-- 对文件本身报告 \`NOT_AVAILABLE\`。
-- 对无法判断的能力报告 \`UNKNOWN\`。
+这些是 AgentLearn namespace 能力，不是通用 slash command。宿主 Agent 可以用自己的方式调用，不要创建 /status、/plan、/review 等容易冲突的命令。
 
-启动读取只负责恢复上下文，不自动开始教学，不自动出第一道题，也不自动修改学习状态。
+### inspect_state
 
-启动摘要建议只包含：
-
-\`\`\`text
-Current Stage
-Active Goals
-Knowledge Debt
-Recent Progress（已有摘要时）
-Next Evidence Action
-Uncertainty
-\`\`\`
-
-## IRLA 学习循环
-
-每次学习活动使用：
-
-\`\`\`text
-Input → Recall → Learning Validation → Application
-\`\`\`
-
-### Input
-
-提供一小段材料、一个概念、一道问题或一个真实任务。Input 必须和当前能力状态及目标相关。
-
-### Recall
-
-要求学习者闭卷回忆、解释、追踪或提出思路。
-
-Recall 阶段只展示 Learner View，例如题目内容和必要上下文；在学习者回答前，不展示答案、解法、评分标准或 Evaluator View。
-
-### Learning Validation
-
-学习者回答后，Agent 才能检查：
-
-- 概念是否正确。
-- 执行过程是否正确。
-- 是否能说明原因。
-- 是否存在边界遗漏或误解。
-
-验证结果应记录为证据摘要，而不是直接给出夸大的长期结论。
-
-### Application
-
-要求学习者把理解用于代码、伪代码、调试、建模或实际问题。必要时增加 Transfer：使用陌生输入、反例或不同表述检查迁移能力。
-
-学习结束后，按项目实例要求执行：
-
-\`\`\`text
-记录证据 → 运行 state validator → distill 摘要
-→ 更新下一次复习 → 输出简短结果
-\`\`\`
-
-Scheduler 负责 FSRS、interval、lapse 和复习时间；Agent 负责提问、解释、追问、评分和证据记录。两者职责不能混淆。
-
-## 动态路线规则
-
-Agent 不生成脱离状态的固定课程表，而是为当前阶段选择最小的下一步证据任务：
-
-| 当前证据状态 | 下一步行动 |
-|---|---|
-| 基础能力为 \`UNKNOWN\` | 先做短诊断，建立可验证观察 |
-| 有观察但仍是 \`HYPOTHESIS\` | 设计验证题、反例或独立实现 |
-| 概念已 \`VERIFIED\` | 进入应用，检查代码和实际解题 |
-| 概念会做但不稳定 | 生成针对性练习，检查重复错误 |
-| 能在陌生问题中迁移 | 提高问题复杂度或减少提示 |
-| 出现重复误解 | 针对误解生成训练，不扩大结论范围 |
-
-每个下一步行动应说明：
-
-- 要验证什么能力。
-- 需要学习者提交什么证据。
-- 什么结果算通过或未通过。
-- 完成后更新哪个状态。
-
-## AgentLearn Capability Interface
-
-这些是 AgentLearn 的 namespace 能力，不是通用 slash command。宿主可以用自己的调用方式映射它们，不应创建或要求 \`/status\`、\`/plan\`、\`/review\` 这类可能冲突的命令。
-
-### \`inspect_state\`
-
-用途：读取并压缩当前状态。
-
-输入：可选的领域、目标或状态路径。
-
-输出：
+读取并压缩当前状态，输出：
 
 - 当前阶段。
 - 当前目标。
 - 主要知识债务。
-- 最近变化（有摘要时）。
-- 已知事实、假设和未知项。
+- 最近变化（存在摘要时）。
+- Facts、Assumptions、Unknowns。
 - 下一步最小证据行动。
 
-### \`generate_plan\`
+### generate_plan
 
-用途：根据证据生成下一阶段行动，不生成固定课表。
+根据当前能力、证据、知识债务、误解、迁移结果、时间限制和目标，生成最小下一步行动。
 
-必须考虑：
+它不是固定课程表。每个行动应写清：
 
-- 当前能力状态。
-- 已有 evidence。
-- 知识债务和重复误解。
-- 应用/迁移结果。
-- 时间限制。
-- 学习目标。
+- 要验证的能力。
+- 学习者要提交的证据。
+- 成功标准。
+- 失败后的下一步。
+- 需要写回的状态位置。
 
-输出应包含行动、成功标准、失败后的分支以及状态写回方式。
+### learning_review
 
-### \`learning_review\`
-
-用途：分析最近一次或一组学习活动。
-
-可输入：commit、notes、tasks、phase reports、assessment 或日志索引。
-
-输出：
+根据 commit、notes、tasks、assessment、phase report 或日志索引分析最近学习行为，输出：
 
 - 已观察到的能力。
 - 尚未解决的问题。
 - 可能的误解。
 - 下一步建议。
-- 对应证据和置信度。
+- 证据引用和置信度。
 
-只保存摘要和证据引用，不复制聊天全文。
+只保存摘要和来源引用，不保存聊天全文。
 
-### \`handoff_package\`
+### handoff_package
 
-用途：为另一个 Agent 生成最小可用的接管上下文。
+为下一个 Agent 输出最小接管上下文，固定使用：
 
-输出必须使用以下固定顺序：
-
-\`\`\`text
+```text
 AgentLearn Handoff Package
 
 Facts
@@ -282,158 +378,160 @@ Unknowns
 Evidence
 Active Decisions
 Next Actions
-\`\`\`
+```
 
-各部分含义：
+新 Agent 先读这个包，再按需读取具体证据。假设不能当成事实，未知不能被补写成已知。
 
-- \`Facts\`：文件或证据直接支持的事实。
-- \`Assumptions\`：为了继续工作而暂时采用的推测，不能当成事实。
-- \`Unknowns\`：目前没有足够证据判断的内容。
-- \`Evidence\`：支持事实或判断的摘要及来源。
-- \`Active Decisions\`：当前仍有效的设计决定和理由。
-- \`Next Actions\`：下一 Agent 应优先执行的有限步骤。
+## 状态与证据规则
 
-接管 Agent 应先读取该包，再按需打开具体证据；不能因为某项写在 \`Assumptions\` 中就把它升级为稳定能力。
+能力状态遵循以下证据链：
 
-## 证据来源
+```text
+Observation → Evidence → Hypothesis → Verification → Stable State
+```
 
-状态判断可以引用以下真实来源：
+一个状态声明应能回答三个问题：
 
-- Git history 和 commit message。
-- phase report。
-- 学习 notes。
-- assessment 结果。
-- 任务产出和测试结果。
-- 具体知识源中的可复核内容。
+1. Agent 实际观察到了什么？
+2. 哪些证据可以复核？
+3. 为什么当前判断足够稳定，或为什么仍然未知？
 
-证据层的目标不是收集所有资料，而是让 Agent 能回答：“我为什么这样判断？”
+证据摘要至少应包含：
 
-一个能力声明至少应能关联：
-
-\`\`\`json
+```json
 {
   "claim": "能力或状态声明",
-  "evidence": ["可复核证据摘要或引用"],
+  "evidence": ["可复核证据摘要或 source_ref"],
   "confidence": 0.0,
   "timestamp": "YYYY-MM-DD"
 }
-\`\`\`
+```
 
-置信度不能替代验证。即使置信度较高，没有足够证据时仍应保持 \`UNKNOWN\` 或 \`HYPOTHESIS\`。
+confidence 不能代替验证。没有足够证据时，即使 Agent 感觉很确定，也必须保持 UNKNOWN 或 HYPOTHESIS。
 
-## 可替换的适配边界
+## 动态学习路线
 
-AgentLearn 的核心协议不绑定具体工具：
+Agent 应根据证据选择下一步：
 
-\`\`\`text
-Knowledge Source  →  Ability Map  →  Learner State
-       可替换           可替换           私有实例
+| 证据情况 | 行动 |
+|---|---|
+| 能力为 UNKNOWN | 做短诊断，建立观察 |
+| 有观察但仍是 HYPOTHESIS | 用反例、验证题或独立实现检查 |
+| 已通过验证 | 进入 Application |
+| 应用不稳定 | 针对错误生成小练习 |
+| 能处理陌生问题 | 增加难度或减少提示 |
+| 重复出现同一误解 | 生成针对误解的训练 |
 
-Agent  ↔  AgentLearn Protocol  ↔  Scheduler Adapter
-\`\`\`
+路线必须是动态的，不绑定某一本教材，也不提前生成与状态无关的长期课程表。
 
-- \`Knowledge Source\`：教材、文档、课程、题目或用户提供的材料。
-- \`Ability Map\`：某个领域的能力分解。
-- \`Scheduler\`：复习时间、间隔和遗忘调度。
-- \`AgentLearn Protocol\`：状态、证据、评估和交接规则。
+## Agent 交接
 
-替换知识源不应改变 Learner State 的证据规则；替换 Ability Map 不应把个人数据带入公共框架；替换 Scheduler 不应让 Agent 越权修改复习算法。
+接管 Agent 只需要恢复“当前仍然有效的最小事实”。
 
-## 快速接入
+交接包必须区分：
 
-### 对维护者
+- Facts：来源直接支持的事实。
+- Assumptions：暂时采用的推测。
+- Unknowns：没有足够证据的内容。
+- Evidence：事实或判断的来源摘要。
+- Active Decisions：仍有效的决定及理由。
+- Next Actions：下一 Agent 需要做的有限动作。
 
-1. 将通用协议放入 \`.agentlearn/\`。
-2. 将真实学习者数据放入 \`.agentlearn-private/\` 或其他 ignored 路径。
-3. 从 \`.agentlearn/templates/\` 复制模板，按需要创建私有状态文件。
-4. 配置领域 Ability Map、Knowledge Source 和 Scheduler。
-5. 让宿主 Agent 读取 \`skill.md\` 和 \`protocols/boot.md\`。
-6. 首次启动只恢复状态，不自动开始教学。
+推荐的交接提示：
 
-### 对接管 Agent
+```text
+请接管这个 AgentLearn 学习任务。
+先读取 .agentlearn/skill.md、boot.md 和当前私有状态。
+如果存在 Handoff Package，先按 Facts、Assumptions、Unknowns、Evidence、Active Decisions、Next Actions 恢复。
+不要读取全部历史，不要猜测缺失状态，不要开始教学。
+先输出最小接管摘要，等待我的下一步指令。
+```
 
-可使用如下最小提示：
+## Codex 中的使用方式
 
-\`\`\`text
-加载 AgentLearn。
-读取 .agentlearn/skill.md 和 .agentlearn/protocols/boot.md。
-按低 Token 顺序读取存在的 .agentlearn-private 状态文件。
-不要读取全部历史，不要猜测缺失状态。
-先输出 Facts、Unknowns、当前目标、知识债务和 Next Evidence Action，暂不开始教学。
-\`\`\`
+如果 Codex 已接入 AgentLearn Skill，可以使用以下 namespace 调用：
 
-开始学习后，使用 IRLA；学习结束后，按 Evidence Gate 更新状态，并在有 Scheduler 时更新下一次复习。
-
-### Codex 中的调用方式
-
-如果宿主 Codex 已接入 AgentLearn Skill，可使用其 namespace 能力：
-
-\`\`\`text
+```text
 $agentlearn inspect_state
 $agentlearn generate_plan
 $agentlearn learning_review
 $agentlearn handoff_package
-\`\`\`
+```
 
-这只是 Codex 的映射示例，不是 AgentLearn 对所有宿主强制要求的命令格式。
+自然语言也可以：
 
-## 隐私与提交检查
+```text
+请执行 AgentLearn inspect_state。
+请生成下一步最小证据行动，不要生成固定课程表。
+请根据本次学习生成 handoff package。
+```
 
-提交公共仓库前，必须确认：
+这些不是 AgentLearn 强制规定的通用 slash command。其他 Agent 可以使用等价的自然语言或工具接口。
 
-- 没有真实姓名、个人目标、性格描述或能力评价。
-- 没有真实 learner state、evidence、history、decision 或聊天记录。
-- \`.agentlearn-private/\` 已被 \`.gitignore\` 忽略。
-- 公开 example 只包含通用模板或去标识化示例。
-- Git 暂存区没有私有文件。
+## 提交 GitHub 前的隐私检查
 
-建议执行：
+公共仓库可以包含通用协议、模板、schema 和去标识化的领域 example，但不能包含个人学习状态。
 
-\`\`\`bash
+提交前执行：
+
+```bash
 git status --ignored
 git diff --cached
-git grep -i "姓名\|个人目标\|性格\|学习历史" -- .
-\`\`\`
+git ls-files .agentlearn-private
+```
 
-最后一条命令的关键词应按项目实际情况补充；扫描结果必须人工确认，不能只依赖命令退出码。
+确认：
 
-## 仓库内容
+- git ls-files .agentlearn-private 没有输出。
+- 暂存区没有私有文件。
+- 没有真实姓名、账号、个人目标、性格分析或能力评价。
+- 没有 learner state、evidence、history、decision 或聊天全文。
+- 没有本地绝对路径或私人学习材料。
 
-- \`.agentlearn/\`：公共 Skill、协议、schema 和模板。
-- \`examples/\`：不包含真实个人数据的领域实例或示例。
-- \`core/\`、\`adapters/\`、\`agents/\`：框架实现和接入协议（如果该版本包含）。
-- \`.agentlearn-private/\`：本地个人实例，不属于公共仓库。
+如果要检查常见个人信息关键词：
 
-更详细的协议定义请从以下入口开始阅读：
+```bash
+git grep -n -i -E "姓名|账号|个人目标|性格|学习历史|私人笔记" -- .
+```
 
-- \`.agentlearn/skill.md\`
-- \`.agentlearn/protocols/boot.md\`
-- \`.agentlearn/protocols/handoff.md\`
-- \`.agentlearn/protocols/capability-interface.md\`
-- \`.agentlearn/schemas/\`
-- \`.agentlearn/templates/\`
+命令命中 README 中的隐私规则文字并不代表泄露；需要人工检查命中的上下文。
 
-## 当前范围
+## 适配器边界
 
-本项目专注于：
+以下部分都可以替换：
 
-- 学习状态建模。
-- 证据门槛和能力验证。
-- IRLA 学习循环。
-- 动态下一步行动。
-- 低 Token 上下文恢复。
-- 跨 Agent 交接。
-- 公共协议与个人数据隔离。
+```text
+Knowledge Source  →  Ability Map  →  Learner State
+       可替换           可替换           私有实例
 
-本项目当前不要求：
+Agent  ↔  AgentLearn Protocol  ↔  Scheduler
+```
 
-- 复杂 UI。
-- 数据库。
-- 云端同步。
-- 新的 AI Provider。
-- 通用 Agent 编排框架。
-- 绑定某一本教材或某一种课程体系。
+- Knowledge Source：教材、文档、课程、题目、代码或用户上传材料。
+- Ability Map：某个领域需要掌握的能力结构。
+- Learner State：当前学习者状态，只写入有证据支持的内容。
+- Scheduler：复习时间、间隔和遗忘调度。
+- AgentLearn Protocol：启动、评估、状态和交接规则。
 
-## License
+替换 Knowledge Source 不应改变证据门槛；替换 Ability Map 不应暴露个人数据；替换 Scheduler 不应改变 Agent 的评估职责。
+
+## 适合扩展的内容
+
+可以添加：
+
+- 新领域的通用 Ability Map。
+- 去标识化的评估方案。
+- 新 Knowledge Source 适配说明。
+- 新 Scheduler 适配说明。
+- 公共 schema、模板和协议改进。
+
+不要添加：
+
+- 某个用户的真实学习状态。
+- 某个用户的学习历史或性格分析。
+- 私人材料、聊天全文、答案记录或本地路径。
+- 复杂 UI、数据库、云同步或新的 AI Provider，除非未来需求明确改变范围。
+
+## 许可证
 
 本项目采用 MIT License，除非具体文件另有说明。
