@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "rating_scale": "L1-L5; null means UNKNOWN, not zero",
+  "competencies": [
+    {
+      "id": "c-control-flow-invariants",
+      "title": "C 循环边界与累加器不变量",
+      "ability_map_refs": ["N02-01", "N02-03"],
+      "concept": "通过合法初值、循环边界与不变量解释程序状态",
+      "status": "UNKNOWN",
+      "recall_score": null,
+      "explanation_score": null,
+      "application_score": null,
+      "transfer_score": null,
+      "level": "UNKNOWN",
+      "observed_facts": ["OF-C-001"],
+      "model_hypotheses": ["MH-C-001"],
+      "verifications": ["V-C-001"],
+      "confidence": 0.0,
+      "verification_required": true,
+      "evidence": []
+    },
+    {
+      "id": "c-scope-and-input-destinations",
+      "title": "C 作用域与输入目标地址",
+      "ability_map_refs": ["N02-01", "N02-02", "N02-07"],
+      "concept": "区分遮蔽、对象、地址和 `scanf` 写入目标",
+      "status": "UNKNOWN",
+      "recall_score": null,
+      "explanation_score": null,
+      "application_score": null,
+      "transfer_score": null,
+      "level": "UNKNOWN",
+      "observed_facts": ["OF-C-001"],
+      "model_hypotheses": ["MH-C-001"],
+      "verifications": ["V-C-002", "V-C-003"],
+      "confidence": 0.0,
+      "verification_required": true,
+      "evidence": []
+    }
+  ],
+  "fact_registry": [
+    {
+      "id": "OF-C-001",
+      "kind": "observed_fact",
+      "claim": "既往 checkpoint 记录了若干 C 推理能力；它是复测起点，不是当前等级证明。",
+      "source": "C:\\Users\\35074\\.codex\\memories\\MEMORY.md:525",
+      "observed_at": "2026-09-03"
+    },
+    {
+      "id": "OF-PREF-001",
+      "kind": "observed_fact",
+      "claim": "学习者要求导师式互动、主动回忆、费曼解释、对抗性验证与可审计状态。",
+      "source": "用户指令，2026-09-04",
+      "observed_at": "2026-09-04"
+    }
+  ],
+  "hypothesis_registry": [
+    {
+      "id": "MH-C-001",
+      "kind": "model_hypothesis",
+      "claim": "当前 C 能力可能还没有独立实现和陌生情境迁移证据。",
+      "confidence": 0.75,
+      "falsifier": "在未知变式中给出正确推理、边界与可运行验证。"
+    }
+  ],
+  "verification_registry": [
+    {
+      "id": "V-C-001",
+      "kind": "recall_and_explanation",
+      "prompt": "解释为何流式最大值必须以第一个真实输入初始化；给出用 0 初始化会出错的具体输入。",
+      "success": "说出不变量与全负数反例。"
+    },
+    {
+      "id": "V-C-002",
+      "kind": "trace_and_explanation",
+      "prompt": "追踪嵌套作用域中同名变量的输出，并解释外层对象为何不变。",
+      "success": "正确输出，并区分两个对象与作用域。"
+    },
+    {
+      "id": "V-C-003",
+      "kind": "mechanism_and_boundary",
+      "prompt": "解释为何 scanf 的 %d 需要 int 的地址；指出传值会违反什么写入前提。",
+      "success": "说清写入目标、&x 与未初始化/无效目标的边界。"
+    }
+  ]
+}

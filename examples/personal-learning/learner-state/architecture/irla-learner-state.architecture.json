@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "个人 IRLA Learner State",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "learner", "type": "external", "label": "学习者", "sublabel": "作答、解释、应用", "pos": [40, 270], "size": [140, 64] },
+    { "id": "codex", "type": "frontend", "label": "Codex", "sublabel": "导师交互界面", "pos": [250, 270], "size": [140, 64] },
+    { "id": "irla", "type": "backend", "label": "IRLA 协议", "sublabel": "Input · Recall · Validate · Apply", "pos": [460, 270], "size": [190, 74] },
+    { "id": "mastery", "type": "backend", "label": "mastery-loop", "sublabel": "Skill + Python FSRS 调度", "pos": [730, 270], "size": [175, 64] },
+    { "id": "state", "type": "database", "label": "Learner State", "sublabel": "Markdown + JSON + logs", "pos": [990, 270], "size": [175, 64] },
+    { "id": "ability", "type": "external", "label": "Ability Promoting", "sublabel": "既有能力地图与能力证据", "pos": [730, 470], "size": [175, 64] },
+    { "id": "evidence", "type": "database", "label": "原始证据", "sublabel": "回答、代码、反例、复测结果", "pos": [990, 470], "size": [175, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "本地、可审计、可迁移状态", "wraps": ["mastery", "state", "ability", "evidence"], "pad": 34 }
+  ],
+  "connections": [
+    { "id": "learner-codex", "from": "learner", "to": "codex", "label": "回答与提问", "variant": "emphasis" },
+    { "id": "codex-irla", "from": "codex", "to": "irla", "label": "按 IRLA 引导与挑战", "variant": "emphasis", "labelAt": [425, 358] },
+    { "id": "irla-mastery", "from": "irla", "to": "mastery", "label": "生成/评分学习项" },
+    { "id": "mastery-state", "from": "mastery", "to": "state", "label": "FSRS、画像、约束、队列", "labelDy": 63 },
+    { "id": "state-codex", "from": "state", "to": "codex", "label": "仅加载最小上下文", "variant": "dashed", "fromSide": "top", "toSide": "top" },
+    { "id": "state-ability", "from": "state", "to": "ability", "label": "能力节点与下一步", "fromSide": "bottom", "toSide": "bottom", "via": [[1077.5, 410], [1200, 410], [1200, 620], [817.5, 620]], "labelAt": [1200, 548] },
+    { "id": "irla-evidence", "from": "irla", "to": "evidence", "label": "保留事实、假设和验证", "fromSide": "bottom", "toSide": "left", "via": [[555, 410], [930, 410], [930, 502]], "labelSegment": 1 },
+    { "id": "evidence-state", "from": "evidence", "to": "state", "label": "更新需可追溯", "variant": "security" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "职责边界", "items": ["Codex 负责教学、追问与语义评估", "脚本负责 FSRS、历史和到期队列"] },
+    { "dot": "emerald", "title": "状态纪律", "items": ["事实、假设、验证与置信度分离", "不以阅读或自我感觉升级能力"] },
+    { "dot": "amber", "title": "最小上下文", "items": ["每次只加载画像、约束、当前能力与当日队列", "完整聊天不是长期记忆"] }
+  ]
+}

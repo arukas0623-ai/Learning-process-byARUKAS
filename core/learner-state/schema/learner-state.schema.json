@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agent-learning/learner-state.schema.json",
+  "title": "Agent Learning Learner State",
+  "type": "object",
+  "required": ["schema_version", "competencies"],
+  "properties": {
+    "schema_version": { "type": ["integer", "string"] },
+    "learner_profile": { "type": "object" },
+    "selected_goals": { "type": "array", "items": { "type": "object" } },
+    "competencies": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/competency" }
+    },
+    "observations": { "type": "array", "items": { "type": "object" } },
+    "hypotheses": { "type": "array", "items": { "type": "object" } },
+    "verifications": { "type": "array", "items": { "type": "object" } }
+  },
+  "$defs": {
+    "competency": {
+      "type": "object",
+      "required": ["id", "status", "evidence", "confidence", "verification_required"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["UNKNOWN", "HYPOTHESIS", "VERIFIED"] },
+        "recall_score": { "type": ["number", "null"], "minimum": 0, "maximum": 5 },
+        "explanation_score": { "type": ["number", "null"], "minimum": 0, "maximum": 5 },
+        "application_score": { "type": ["number", "null"], "minimum": 0, "maximum": 5 },
+        "transfer_score": { "type": ["number", "null"], "minimum": 0, "maximum": 5 },
+        "observed_facts": { "type": "array", "items": { "type": "string" } },
+        "model_hypotheses": { "type": "array", "items": { "type": "string" } },
+        "verifications": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "items": { "type": ["string", "object"] } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "verification_required": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "VERIFIED" } } },
+          "then": {
+            "properties": {
+              "evidence": { "minItems": 1 },
+              "verifications": { "minItems": 1 },
+              "confidence": { "minimum": 0.6 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

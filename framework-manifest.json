@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "skill": "agent-learning",
+  "core": {
+    "irla": "core/irla/protocol.md",
+    "learner_state_schema": "core/learner-state/schema/learner-state.schema.json",
+    "update_policy": "core/learner-state/update-policy/policy.md",
+    "evidence_rules": "core/learner-state/evidence-rules/rules.md",
+    "evaluation": "core/evaluation",
+    "context_budget": "core/context-management/context-budget.md"
+  },
+  "adapters": {
+    "knowledge_source": "adapters/knowledge-source/source-import.md",
+    "ability_map": "adapters/ability-map/adapter.md",
+    "scheduler": "adapters/scheduler/mastery-loop.md"
+  },
+  "agent_protocol": "agents/AGENT_PROTOCOL.md",
+  "workflow": "Workflow.md",
+  "user_space_template": "user-space",
+  "examples": ["examples/personal-learning"]
+}
