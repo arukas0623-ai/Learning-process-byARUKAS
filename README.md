@@ -49,3 +49,5 @@ Agent ↔ IRLA / Evaluation ↔ Scheduler Adapter
 ## 迁移原则
 
 只要目标 Agent 能读取 Markdown/JSON 并调用所选 scheduler，就可以迁移；不得要求导入聊天记录。替换知识源或能力地图不会改变 Core 的证据门槛、答案隔离和预算规则。
+
+本仓库名为 `Learning-process-byARUKAS`，用于保存个人学习过程与可复用的 Agent Learning Skill 框架。
