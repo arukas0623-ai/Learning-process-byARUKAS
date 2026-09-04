@@ -1,0 +1,7 @@
+{
+  "max_tokens": 10000,
+  "learner_md_limit": 2000,
+  "constraints_limit": 1000,
+  "due_items_limit": 3000,
+  "competency_summary_limit": 3000
+}

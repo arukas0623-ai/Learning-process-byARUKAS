@@ -2,11 +2,15 @@
 
 ## 目录准备
 
-从 `user-space/` 模板复制一个用户状态目录，或使用现有实例：
+从 `user-space/` 或 `examples/template-learning/` 模板复制一个用户状态目录：
 
 ```text
-examples/personal-learning/learner-state/
+<private-user-space>/learner-state/
 ```
+
+模板文件使用 `.example` 后缀。复制后请按运行时名称重命名，例如把
+`learner.md.example` 改为 `learner.md`，把 `competencies.example.json`
+改为 `competencies.json`；真实文件应位于私有 User Space。
 
 用户状态至少要能定位以下内容：
 
@@ -29,9 +33,9 @@ items.json          # scheduler 管理的题目与复习状态
 按 IRLA 运行一次学习会话，Recall 阶段只展示 Learner View。
 ```
 
-## mastery-loop 实例
+## mastery-loop 参考适配器
 
-当前个人实例使用外部 mastery-loop Skill。常见命令形式如下（具体脚本路径以本机安装位置为准）：
+参考配置使用外部 mastery-loop Skill。常见命令形式如下（具体脚本路径以本机安装位置为准）：
 
 ```powershell
 python <mastery-loop>/scripts/context_budget.py --root <learner-state>

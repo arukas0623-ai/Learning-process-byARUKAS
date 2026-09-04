@@ -1,0 +1,7 @@
+{
+  "items": [],
+  "meta": {
+    "scheduler": "<scheduler-provider>",
+    "note": "Scheduler-owned file; do not hand-edit during normal operation."
+  }
+}

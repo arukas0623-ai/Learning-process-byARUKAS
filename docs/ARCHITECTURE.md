@@ -31,7 +31,8 @@ User-owned files       Codex / Claude / local model
 
 ### Examples
 
-放置真实实例，用来验证框架，而不是作为通用规则来源。当前 `examples/personal-learning/` 是 C 基础 + APKM + mastery-loop 的实例。
+公开仓库只放不含个人数据的模板，用来说明接入方式，而不是作为通用规则
+来源。真实实例应放在被 Git 忽略的本地 User Space。
 
 ## 数据流
 

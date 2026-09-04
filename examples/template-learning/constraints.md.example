@@ -1,0 +1,13 @@
+# Teaching Constraints
+
+Only record constraints that are supported by repeated, inspectable evidence.
+
+```text
+Observation: <concrete repeated behavior>
+Evidence: <path, task ID or review record>
+Constraint: <teaching adjustment>
+Confidence: <0..1>
+Last verified: <timestamp>
+```
+
+If evidence is insufficient, leave the constraint out.

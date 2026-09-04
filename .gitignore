@@ -1,4 +1,29 @@
-# User-local runtime state and generated previews should not become framework code.
+# Python runtime noise.
 __pycache__/
-*.pyc
-examples/*/learner-state/logs/*
+*.py[cod]
+
+# User-owned state must stay outside the public framework tree.
+/private/
+/examples/personal-learning/
+
+# Common learner-state filenames (public templates use .example suffixes).
+**/learner.md
+**/constraints.md
+**/competencies.json
+**/items.json
+
+# Runtime evidence, logs and snapshots are instance data, not Core.
+**/logs/*
+!**/logs/.gitkeep
+**/evidence/*
+!**/evidence/README.md
+**/snapshots/*
+!**/snapshots/README.md
+
+# Local-only files may contain absolute paths or private settings.
+*.local.md
+*.local.json
+*.private.md
+*.private.json
+.env
+.env.*

@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.2.0-alpha",
+  "competencies": [
+    {
+      "id": "<ability-node-id>",
+      "name": "<ability name>",
+      "status": "UNKNOWN",
+      "evidence": [],
+      "observed_facts": [],
+      "model_hypotheses": [],
+      "verifications": [],
+      "confidence": 0,
+      "verification_required": true,
+      "timestamp": null
+    }
+  ]
+}

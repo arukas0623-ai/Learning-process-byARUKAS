@@ -36,6 +36,7 @@ scheduler, and learner data are replaceable.
 4. Run [Workflow.md](Workflow.md), then write evidence-linked state and schedule
    the next review.
 
-Detailed contracts live under `core/`; provider-specific behavior lives under
-`adapters/`. The first reference instance is
-`examples/personal-learning/`.
+Detailed contracts live under `core/`; stable cross-provider interfaces live
+under `specification/`; provider-specific behavior lives under `adapters/`.
+The public starting point is `examples/template-learning/`. Real learner state
+belongs in a private User Space and must not be committed to this repository.

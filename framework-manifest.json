@@ -1,4 +1,5 @@
 {
+  "framework_version": "0.2.0-alpha",
   "schema_version": 1,
   "skill": "agent-learning",
   "core": {
@@ -9,6 +10,12 @@
     "evaluation": "core/evaluation",
     "context_budget": "core/context-management/context-budget.md"
   },
+  "specification": {
+    "learner_state": "specification/learner-state-spec.md",
+    "ability_map": "specification/ability-map-spec.md",
+    "evidence": "specification/evidence-spec.md",
+    "adapters": "specification/adapter-spec.md"
+  },
   "adapters": {
     "knowledge_source": "adapters/knowledge-source/source-import.md",
     "ability_map": "adapters/ability-map/adapter.md",
@@ -17,5 +24,5 @@
   "agent_protocol": "agents/AGENT_PROTOCOL.md",
   "workflow": "Workflow.md",
   "user_space_template": "user-space",
-  "examples": ["examples/personal-learning"]
+  "examples": ["examples/template-learning", "examples/demo-flow"]
 }

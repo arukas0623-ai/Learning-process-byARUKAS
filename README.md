@@ -1,96 +1,147 @@
 # Agent Learning Skill Framework
 
-`Learning-process-byARUKAS` 是一个以文件为中心、可插拔、面向长期学习的 Agent Skill 框架。它把聊天中的教学交互与用户自己的 Learner State 分开：Agent 负责提问、解释、挑战和评价；本地 Markdown/JSON 与确定性调度器负责证据、历史、复习时间和迁移。
+## What is this
 
-它不是 Web 学习平台、笔记应用、题库产品或多 Agent 系统。目标是让 Codex、Claude Code 或本地模型能够加载同一套学习协议，同时更换教材、能力地图、调度器和用户状态。
+`Learning-process-byARUKAS` 是一个面向 AI Agent 的个人学习能力管理
+Skill Framework。它把教学交互、能力结构和学习者长期状态分开，让不同
+Agent 可以读取同一份用户资产，并在不同知识领域中执行可审计的学习循环。
 
-## 项目状态
+它不是学习 App、题库、课程平台或聊天记录归档工具。
 
-- **版本**：`0.1.0`（框架抽象阶段）
-- **成熟度**：可用于个人实例和小规模试运行；尚未宣称生产级平台
-- **存储**：用户拥有的 Markdown + JSON；不要求云服务或数据库
-- **当前调度器**：外部 `mastery-loop` Skill，默认 FSRS
-- **当前能力地图**：个人实例使用 APKM；Core 不依赖 APKM
-- **许可证**：当前仓库尚未声明开源许可证；在明确许可证前，不应假设可再发布或商业复用
-
-## 架构
+## Architecture
 
 ```text
 Knowledge Source → Ability Map Provider → Learner State
-                         ↑                    ↑
-                 可替换 adapter        用户拥有的 Markdown/JSON
+        (外部知识)       (需要掌握什么)        (现在掌握到哪里)
 
-Agent ↔ IRLA / Evaluation ↔ Scheduler Adapter
+Agent ↔ Core learning protocol ↔ Scheduler Adapter
+
+Core | Adapters | User Space
 ```
 
-目录职责：
+- `core/`：领域无关的 IRLA、Learner State、评估、证据门槛和上下文预算。
+- `adapters/`：Knowledge Source、Ability Map 和 Scheduler 的替换契约。
+- `user-space/`：用户状态的公开模板；真实状态应放在本地私有目录。
+- `agents/`：任何接入 Agent 都必须遵守的协议。
+- `examples/template-learning/`：不含真实数据的公开示例模板。
+- `private/`：本地私有实例目录，已被 Git 忽略，不属于公开框架。
 
-- `core/`：领域无关的学习协议、状态规则、评估和上下文边界。
-- `adapters/`：知识源、能力地图和调度器的替换契约；当前实现使用 APKM 与 mastery-loop。
-- `user-space/`：实际用户状态的承载位置，不绑定 Codex、Claude 或项目路径。
-- `agents/`：任何 Agent 必须遵守的操作协议。
-- `examples/personal-learning/`：当前个人系统的第一个实例，不是 Core。
+## Design Principles
 
-`user-space/context-budget.json` 是可复制的预算模板；个人实例当前使用 `examples/personal-learning/learner-state/context-budget.json`。
+- Evidence over assumption：证据优先于假设。
+- UNKNOWN over guessing：没有证据时保持 `UNKNOWN`。
+- Context bounded：按预算加载状态，不递归读取全部历史。
+- User data ownership：Learner State 是用户资产。
+- Domain independent：Core 不绑定学科、Agent 或供应商。
+- Answer isolation：Recall 只接收 Learner View，答案在作答后才可读取。
 
-## 可替换边界
-
-| 层 | 当前实现 | 可替换内容 |
-|---|---|---|
-| Knowledge Source | 本地教材/文档/笔记 | PDF、课程、GitHub 项目、手工 Markdown 或其他导入器 |
-| Ability Map | APKM | APKM、课程技能树、手工能力地图 |
-| Scheduler | mastery-loop + FSRS | 其他本地调度器；必须保留 Learner/Evaluator View 契约 |
-| Learner State | Markdown + JSON | 文件布局可变，但证据字段、状态门槛和用户所有权不变 |
-| Agent | Codex | Claude Code、本地模型或其他能执行协议的 Agent |
-
-## 当前个人实例
-
-`examples/personal-learning/learner-state/` 保存 C 基础的个人状态、题库、能力引用和预算。进入该目录后，Agent 先执行预算检查，再通过 mastery-loop `due` 取得 Learner View；用户回答后调用 `reveal`、`grade`，按证据协议更新状态并 `distill`。这只是实例配置，不会被 Core 当作通用知识。
-
-## 使用方式
-
-将一个用户自己的 `user-space/` 目录与所选 adapters 提供给任意 Agent，然后要求：
+## Core workflow
 
 ```text
-加载 agent-learning Skill，读取我的 user-space 状态，使用配置的知识源、能力地图和调度器，按 IRLA 开始一次学习会话。
+Source Input → Ability Extraction → Planning → Recall
+→ Correction → Application / Transfer → Evidence
+→ Learner State Update → Future Scheduling
 ```
 
-一次性解释、翻译和总结不应启动长期学习循环。
+IRLA 定义为 Input → Recall → Learning Validation → Application。长期状态
+只能沿 Observation → Evidence → Hypothesis → Verification → Stable State
+更新；一次正确或错误回答都不能直接代表长期能力。
 
-## 快速开始
+## Reference adapters
 
-1. 准备一个用户状态目录，至少包含 `learner.md`、`constraints.md`、`competencies.json`、`context-budget.json` 和调度器所需的 `items.json`。
-2. 让 Agent 加载根目录的 `SKILL.md` 与 `agents/AGENT_PROTOCOL.md`。
-3. 指定知识源、Ability Map Provider、Scheduler Adapter 和用户状态目录。
-4. 要求 Agent 执行：
+| Role | Current reference | Replaceable with |
+|---|---|---|
+| Agent | Codex | Claude Code、本地模型或其他能执行协议的 Agent |
+| Ability Map | APKM | 手工技能树、课程地图或其他 Provider |
+| Scheduler | mastery-loop + FSRS | 其他支持 due、评分和复习状态的本地调度器 |
+| State | Markdown + JSON | 保持字段和证据契约的其他文件布局 |
 
-   ```text
-   加载 agent-learning Skill，读取指定的用户状态，按 Workflow.md 执行一次长期学习会话；先检查 context budget，Recall 阶段只使用 Learner View。
-   ```
+Core 不依赖 APKM、mastery-loop 或 Codex；这些依赖只存在于 adapters 和
+具体实例。当前 mastery-loop 运行时是外部 Skill，不随本仓库打包。
 
-5. 会话结束时，Agent 必须保存证据、运行状态校验、更新复习状态并留下短摘要。
+## Public template and private data
 
-如果只是问一个孤立问题，不要加载此 Skill；直接回答即可。
+从 `examples/template-learning/` 复制模板到本地 User Space，再替换知识源、
+能力节点和调度器配置。真实的 `learner.md`、`constraints.md`、
+`competencies.json`、回答、日志、快照和绝对路径不得提交到公开仓库；本地
+`private/` 目录已加入 `.gitignore`。
 
-## 迁移原则
+个人学习只是该框架的一个实例，不是 Core 规则来源。公开模板不包含个人
+学习历史、答案或证据。
 
-只要目标 Agent 能读取 Markdown/JSON 并调用所选 scheduler，就可以迁移；不得要求导入聊天记录。替换知识源或能力地图不会改变 Core 的证据门槛、答案隔离和预算规则。
+## Status and scope
 
-本仓库名为 `Learning-process-byARUKAS`，用于保存个人学习过程与可复用的 Agent Learning Skill 框架。
+- 当前版本：见 [VERSION.md](VERSION.md)，`0.2.0-alpha`。
+- 当前成熟度：Personal Stable / Framework Alpha，适合受控个人或小规模试运行。
+- 不提供 UI、数据库、云同步、商业功能或多 Agent 编排。
+- 适配器目前以文档契约和外部工具为主，不是完整插件注册系统。
+- MIT License，见 [LICENSE](LICENSE)。
 
-## 文档索引
+## Quick Start
 
-- [SKILL.md](SKILL.md)：Agent Skill 入口与硬性边界
+1. Clone this repository。
+2. 复制 `examples/template-learning/` 到自己的私有 User Space，并把
+   `.example` 文件名改为运行时需要的 `learner.md`、`constraints.md`、
+   `competencies.json`、`context-budget.json` 和 `items.json`。
+3. 选择 Knowledge Source 和 Ability Map Provider。
+4. 选择 Scheduler Adapter，并确认其支持 Learner View / Evaluator View。
+5. 让 Codex、Claude Code 或本地模型加载 `SKILL.md` 和
+   `agents/AGENT_PROTOCOL.md`。
+6. 先运行预算检查，再开始一次小范围 IRLA 学习循环。
+
+## Start an Agent session
+
+让 Agent 加载根目录的 `SKILL.md`、`agents/AGENT_PROTOCOL.md` 和选定的
+User Space，然后发送：
+
+```text
+加载 agent-learning Skill，读取指定的 User Space、知识源、能力地图和调度器。
+先执行 context budget 检查，Recall 阶段只展示 Learner View，按 Workflow.md
+完成一次 IRLA 学习循环，并只写入有证据链的状态更新。
+```
+
+一个不依赖特定 Agent 的接入说明见 [docs/QUICKSTART.md](docs/QUICKSTART.md)。
+
+## Example Workflow
+
+一次会话只加载当前任务需要的状态：
+
+```text
+Agent loads:
+  learner state
+  constraints
+  due items (Learner View)
+
+User answers
+Agent evaluates (Evaluator View)
+Application / transfer task runs
+Evidence is recorded
+Learner State is updated only through the evidence gate
+```
+
+无个人数据的完整示例见 [examples/demo-flow/README.md](examples/demo-flow/README.md)。
+
+## Documentation
+
+- [SKILL.md](SKILL.md)：Skill 入口和硬性边界
 - [Workflow.md](Workflow.md)：完整学习循环
-- [agents/AGENT_PROTOCOL.md](agents/AGENT_PROTOCOL.md)：所有 Agent 的执行协议
-- [docs/PROJECT.md](docs/PROJECT.md)：项目定位、目标与非目标
-- [docs/QUICKSTART.md](docs/QUICKSTART.md)：从零开始接入一个 Agent
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：Core、Adapter、User Space 和实例关系
-- [docs/STATE_MODEL.md](docs/STATE_MODEL.md)：Learner State、证据门槛与答案隔离
-- [docs/ADAPTERS.md](docs/ADAPTERS.md)：知识源、能力地图和调度器适配契约
-- [docs/MAINTENANCE.md](docs/MAINTENANCE.md)：备份、迁移、版本和隐私维护
-- [framework-manifest.json](framework-manifest.json)：机器可读的入口清单
+- [agents/AGENT_PROTOCOL.md](agents/AGENT_PROTOCOL.md)：Agent 执行协议
+- [CONTRIBUTING.md](CONTRIBUTING.md)：贡献、Adapter 扩展和测试规范
+- [ROADMAP.md](ROADMAP.md)：已完成、计划和明确不做的方向
+- [VERSION.md](VERSION.md)：版本和验证里程碑
+- [specification/](specification/)：稳定的 Learner State、Ability Map、Evidence 和 Adapter 接口
+- [docs/PROJECT.md](docs/PROJECT.md)：项目定位、目标和非目标
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：Core、Adapter、User Space 关系
+- [docs/STATE_MODEL.md](docs/STATE_MODEL.md)：状态模型、证据门槛和答案隔离
+- [docs/ADAPTERS.md](docs/ADAPTERS.md)：当前适配契约
+- [docs/MAINTENANCE.md](docs/MAINTENANCE.md)：备份、迁移和隐私维护
+- [framework-manifest.json](framework-manifest.json)：机器可读入口清单
 
-## 贡献边界
+## Contribution boundary
 
-优先修复可观察的协议缺口、数据损坏风险、答案泄漏和上下文失控；不要因为“功能更多”就把 UI、数据库、云同步、排行榜或多 Agent 编排加入 Core。新增规则应附带可复现证据和最小验证。
+优先修复可观察的协议缺口、答案泄漏、证据污染、上下文失控和迁移问题。
+不要因为功能数量而把 UI、数据库、云同步、排行榜或多 Agent 编排加入 Core。
+
+## License
+
+代码与文档采用 MIT License。外部依赖仍受其各自许可证约束。
