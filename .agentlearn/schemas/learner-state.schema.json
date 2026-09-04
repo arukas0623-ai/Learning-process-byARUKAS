@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agentlearn/learner-state.schema.json",
+  "title": "AgentLearn Learner State",
+  "type": "object",
+  "required": ["schema_version", "state_type", "current_stage", "known_skills", "unknown_skills", "confidence"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "state_type": {"const": "learner_state"},
+    "last_updated": {"type": "string", "format": "date"},
+    "current_stage": {"type": "object", "required": ["id", "status"], "properties": {"id": {"type": "string"}, "status": {"type": "string"}, "basis_refs": {"type": "array", "items": {"type": "string"}}}},
+    "strengths": {"type": "array", "items": {"type": "object"}},
+    "weaknesses": {"type": "array", "items": {"type": "object"}},
+    "known_skills": {"type": "array", "items": {"type": "string"}},
+    "unknown_skills": {"type": "array", "items": {"type": "string"}},
+    "confidence": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}},
+    "competency_status": {"type": "object"},
+    "state_boundary": {"type": "string"}
+  }
+}

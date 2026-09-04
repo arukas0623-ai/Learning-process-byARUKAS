@@ -1,0 +1,102 @@
+{
+  "schema_version": "0.2.0-alpha",
+  "id": "competitive-programming",
+  "name": "Competitive Programming",
+  "purpose": "面向蓝桥杯与 ACM-ICPC 的长期能力地图，不绑定具体教材、课程或训练平台。",
+  "source_refs": [],
+  "assessment_policy": {
+    "methods": ["recall", "explanation", "application", "transfer"],
+    "principle": "能力节点描述可观察行为，不预设学习者已经掌握。"
+  },
+  "phases": [
+    {
+      "id": "phase-0-programming-foundation",
+      "name": "Phase 0: Programming Foundation",
+      "description": "建立从代码输入到程序状态变化、验证和问题拆解的基础。",
+      "prerequisites": [],
+      "nodes": [
+        {"id": "cp-p0-compile-run", "name": "编译与运行", "description": "能够编译、运行并区分源代码、可执行程序和运行时错误。", "prerequisites": [], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-variables-types", "name": "变量和数据类型", "description": "能够根据数据范围选择类型，并追踪变量值在执行过程中的变化。", "prerequisites": ["cp-p0-compile-run"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-input-output", "name": "输入输出", "description": "能够理解输入数据、输出结果及其格式约束，并处理基本边界。", "prerequisites": ["cp-p0-variables-types"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-conditionals", "name": "条件判断", "description": "能够根据条件控制执行路径，并解释每条路径的状态结果。", "prerequisites": ["cp-p0-variables-types"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-loops", "name": "循环", "description": "能够设计循环边界、维护循环状态并说明循环不变量或终止条件。", "prerequisites": ["cp-p0-conditionals", "cp-p0-input-output"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-functions", "name": "函数", "description": "能够拆分函数职责，理解参数、返回值和局部状态。", "prerequisites": ["cp-p0-variables-types", "cp-p0-conditionals"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-debugging", "name": "调试能力", "description": "能够根据现象构造假设，定位最小错误范围并用输出、断点或测试验证。", "prerequisites": ["cp-p0-compile-run", "cp-p0-variables-types", "cp-p0-conditionals"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p0-problem-decomposition", "name": "基础问题拆解", "description": "能够把自然语言任务拆为输入、输出、状态、步骤和可验证的小问题。", "prerequisites": ["cp-p0-input-output", "cp-p0-conditionals"], "assessment_methods": ["recall", "explanation", "application", "transfer"]}
+      ]
+    },
+    {
+      "id": "phase-1-c-language-core",
+      "name": "Phase 1: C Language Core",
+      "description": "建立对 C 对象、内存、数据组织和基本系统交互的可验证理解。",
+      "prerequisites": ["phase-0-programming-foundation"],
+      "nodes": [
+        {"id": "cp-p1-arrays", "name": "数组", "description": "能够使用连续元素组织数据，并正确处理索引、边界和遍历。", "prerequisites": ["cp-p0-loops", "cp-p0-variables-types"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p1-strings", "name": "字符串", "description": "能够理解 C 字符串的终止约定并完成安全的遍历、比较和修改。", "prerequisites": ["cp-p1-arrays"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p1-pointers", "name": "指针", "description": "能够区分对象、地址、指针值和解引用，并追踪指针操作的结果。", "prerequisites": ["cp-p1-arrays", "cp-p0-functions"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p1-memory-model", "name": "内存模型", "description": "能够解释栈、静态存储和堆等对象生命周期与访问边界。", "prerequisites": ["cp-p1-pointers"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p1-struct", "name": "struct", "description": "能够定义记录型数据，按字段组织状态并传递或更新对象。", "prerequisites": ["cp-p1-arrays", "cp-p1-pointers"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p1-dynamic-memory", "name": "动态内存", "description": "能够申请、检查、使用和释放动态内存，并解释失败与生命周期边界。", "prerequisites": ["cp-p1-pointers", "cp-p1-memory-model"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p1-file-io", "name": "文件操作", "description": "能够理解文件打开、读写、错误处理和关闭的基本生命周期。", "prerequisites": ["cp-p0-input-output", "cp-p1-struct"], "assessment_methods": ["recall", "explanation", "application", "transfer"]}
+      ]
+    },
+    {
+      "id": "phase-2-cpp-transition",
+      "name": "Phase 2: C++ Transition",
+      "description": "从 C 的对象与内存基础过渡到 C++ 语法、抽象和标准库。",
+      "prerequisites": ["phase-1-c-language-core"],
+      "nodes": [
+        {"id": "cp-p2-syntax", "name": "C++ 语法", "description": "能够阅读和编写竞赛所需的基础 C++ 语法，并识别与 C 的关键差异。", "prerequisites": ["cp-p0-functions", "cp-p1-arrays"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p2-oop-basics", "name": "面向对象基础", "description": "能够理解类、对象、封装和基本成员函数，并判断何时需要抽象。", "prerequisites": ["cp-p2-syntax", "cp-p1-struct"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p2-stl", "name": "STL", "description": "能够选择并组合标准库算法、迭代器和比较器解决常见操作。", "prerequisites": ["cp-p2-syntax", "cp-p2-containers"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p2-generic", "name": "泛型思想", "description": "能够识别数据结构与操作之间的共性，并使用参数化方式复用逻辑。", "prerequisites": ["cp-p2-syntax", "cp-p2-oop-basics"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p2-containers", "name": "常用容器", "description": "能够根据访问、插入、删除和排序需求选择 vector、string、map、set 等容器。", "prerequisites": ["cp-p2-syntax", "cp-p1-arrays"], "assessment_methods": ["recall", "explanation", "application", "transfer"]}
+      ]
+    },
+    {
+      "id": "phase-3-data-structures",
+      "name": "Phase 3: Data Structures",
+      "description": "建立数据组织、操作约束和复杂度之间的联系。",
+      "prerequisites": ["phase-2-cpp-transition"],
+      "nodes": [
+        {"id": "cp-p3-linked-list", "name": "链表", "description": "能够根据节点和链接关系完成遍历、插入、删除并处理空结构。", "prerequisites": ["cp-p1-pointers", "cp-p1-struct"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p3-stack", "name": "栈", "description": "能够用后进先出模型解决匹配、回溯和模拟问题。", "prerequisites": ["cp-p2-containers", "cp-p0-loops"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p3-queue", "name": "队列", "description": "能够用先进先出模型解决层序处理、调度和广度扩展问题。", "prerequisites": ["cp-p2-containers", "cp-p0-loops"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p3-hash", "name": "哈希", "description": "能够利用键到值的映射加速查找，并说明冲突、空间和边界问题。", "prerequisites": ["cp-p2-containers", "cp-p4-complexity"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p3-tree", "name": "树", "description": "能够表示层级关系，完成遍历并根据结构性质解决问题。", "prerequisites": ["cp-p3-linked-list", "cp-p3-stack", "cp-p3-queue"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p3-heap", "name": "堆", "description": "能够维护动态最值并解释堆操作的复杂度与不变量。", "prerequisites": ["cp-p3-tree", "cp-p4-complexity"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p3-graph", "name": "图", "description": "能够用顶点和边建模关系，区分有向、无向、带权和连通等约束。", "prerequisites": ["cp-p3-tree", "cp-p2-containers"], "assessment_methods": ["recall", "explanation", "application", "transfer"]}
+      ]
+    },
+    {
+      "id": "phase-4-algorithms",
+      "name": "Phase 4: Algorithms",
+      "description": "建立从约束、复杂度到可证明算法策略的能力。",
+      "prerequisites": ["phase-3-data-structures"],
+      "nodes": [
+        {"id": "cp-p4-complexity", "name": "复杂度分析", "description": "能够估算时间和空间复杂度，并将其与输入规模和限制联系起来。", "prerequisites": ["cp-p0-loops", "cp-p0-functions"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-sorting", "name": "排序", "description": "能够选择、实现或调用排序方法，并解释稳定性、复杂度和比较规则。", "prerequisites": ["cp-p1-arrays", "cp-p4-complexity"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-binary-search", "name": "二分", "description": "能够识别单调性或有序空间，设计边界并验证二分循环不变量。", "prerequisites": ["cp-p4-complexity", "cp-p4-sorting"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-recursion", "name": "递归", "description": "能够定义递归状态、终止条件和规模缩减，并追踪调用栈。", "prerequisites": ["cp-p0-functions", "cp-p3-tree"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-dfs-bfs", "name": "DFS/BFS", "description": "能够根据状态空间和访问顺序选择深度或广度搜索，并避免重复访问。", "prerequisites": ["cp-p3-graph", "cp-p3-stack", "cp-p3-queue", "cp-p4-recursion"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-greedy", "name": "贪心", "description": "能够提出局部选择，检查交换论证或其他充分条件，而不是只凭直觉。", "prerequisites": ["cp-p4-complexity", "cp-p4-sorting"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-dynamic-programming", "name": "动态规划", "description": "能够识别重叠子问题和最优子结构，定义状态、转移、边界和计算顺序。", "prerequisites": ["cp-p4-complexity", "cp-p4-recursion"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p4-graph-algorithms", "name": "图算法", "description": "能够根据图的性质选择连通、最短路、拓扑或生成结构等算法模型。", "prerequisites": ["cp-p3-graph", "cp-p4-dfs-bfs", "cp-p4-complexity"], "assessment_methods": ["recall", "explanation", "application", "transfer"]}
+      ]
+    },
+    {
+      "id": "phase-5-competitive-programming",
+      "name": "Phase 5: Competitive Programming",
+      "description": "把读题、建模、实现、调试、优化和比赛节奏组合成可复现的解题流程。",
+      "prerequisites": ["phase-4-algorithms"],
+      "nodes": [
+        {"id": "cp-p5-problem-reading", "name": "读题", "description": "能够提取输入、输出、约束、目标、样例含义和隐藏边界。", "prerequisites": ["cp-p0-problem-decomposition"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p5-modeling", "name": "建模", "description": "能够把题意映射为状态、数据结构、关系或算法问题，并说明模型边界。", "prerequisites": ["cp-p5-problem-reading", "cp-p4-algorithms"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p5-implementation", "name": "代码实现", "description": "能够将模型转为可编译、可测试、符合约束的竞赛代码。", "prerequisites": ["cp-p5-modeling", "cp-p2-syntax"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p5-debug", "name": "竞赛 Debug", "description": "能够利用最小反例、日志、断言和边界测试定位实现与模型之间的偏差。", "prerequisites": ["cp-p5-implementation", "cp-p0-debugging"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p5-optimization", "name": "复杂度优化", "description": "能够从约束和瓶颈出发替换数据结构或算法，并验证优化后的正确性。", "prerequisites": ["cp-p5-implementation", "cp-p4-complexity"], "assessment_methods": ["recall", "explanation", "application", "transfer"]},
+        {"id": "cp-p5-contest-training", "name": "比赛训练", "description": "能够在时间限制下安排题目选择、提交反馈、复盘和间隔复习。", "prerequisites": ["cp-p5-problem-reading", "cp-p5-debug", "cp-p5-optimization"], "assessment_methods": ["recall", "explanation", "application", "transfer"]}
+      ]
+    }
+  ]
+}

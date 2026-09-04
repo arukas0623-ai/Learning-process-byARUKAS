@@ -6,6 +6,16 @@ __pycache__/
 /private/
 /examples/personal-learning/
 
+# AgentLearn runtime state contains personal learner data and must never be published.
+/.agentlearn/state/*
+!/.agentlearn/state/
+!/.agentlearn/state/schema.json
+/examples/competitive-programming/initial-learner-state.json
+/examples/competitive-programming/baseline-assessment.json
+
+# AgentLearn private personal instance: never publish learner identity or history.
+/.agentlearn-private/
+
 # Common learner-state filenames (public templates use .example suffixes).
 **/learner.md
 **/constraints.md

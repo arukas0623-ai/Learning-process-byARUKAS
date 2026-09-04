@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1.0",
+  "state_type": "learner_state",
+  "last_updated": null,
+  "current_stage": {"id": "", "status": "UNKNOWN", "basis_refs": []},
+  "strengths": [],
+  "weaknesses": [],
+  "known_skills": [],
+  "unknown_skills": [],
+  "confidence": {},
+  "competency_status": {"default_for_unlisted_nodes": "UNKNOWN"},
+  "state_boundary": "只写有证据支持的状态；未知能力保持 UNKNOWN。"
+}
